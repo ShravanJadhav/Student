@@ -25,7 +25,8 @@ class DataIngestion:
     def iniate_data_injestion(self):
         try:
             #Reading Data from database
-            df = read_sql_data()
+            #df = read_sql_data()
+            df = pd.read_csv('notebook/data/row.csv')
             logging.info("Reading data from mysql")
 
             #creating artifact folder and file if its dosenot exits
@@ -37,6 +38,11 @@ class DataIngestion:
             test_set.to_csv(self.ingestion_config.test_data_path, index=False,header=True)
 
             logging.info("Data Ingestion Complated")
+
+            return (
+                self.ingestion_config.train_data_path,
+                self.ingestion_config.test_data_path
+            )
 
 
         except Exception as e:
