@@ -10,13 +10,12 @@ from src.StudentAnalysis.utils import read_sql_data
 
 from sklearn.model_selection import train_test_split
 
+
 @dataclass
 class DataIngestionConfig:
     train_data_path:str = os.path.join('artifacts','train.csv')
     test_data_path:str = os.path.join('artifacts','test.csv')
     row_data_path:str = os.path.join('artifacts','row.csv')
-
-
 
 class DataIngestion:
     def __init__(self):
