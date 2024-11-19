@@ -17,6 +17,9 @@ from xgboost import XGBRegressor
 from src.StudentAnalysis.exception import CustomException
 from src.StudentAnalysis.logger import logging
 
+from src.StudentAnalysis.utils import save_object  
+from src.StudentAnalysis.utils import evaluate_models
+
 @dataclass
 class ModelTrainerConfig:
     trained_model_file_path = os.path.join('articats','model.pkl')
@@ -59,7 +62,7 @@ class ModelTrainer:
                     'n_estimators' : [8,16,32,64,128,256]
                 },
 
-                "gardient Boosting" : {
+                "Gardient Boosting" : {
                     #'loss' : ['squared_error', 'huber', 'absolute_error', 'quantile'],
                     'learning_rate' : [.1,.01,.05,.001],
                     'subsample' : [0.6,0.7,0.75,0.9,0.85,0.9],
@@ -75,19 +78,45 @@ class ModelTrainer:
                     'n_estimators' : [8,16,32,64,128,256]
                 },
 
-                "catBoosting Regressor" :{
+                "CatBoosting Regressor" :{
                     'depth' : [6,8,10],
                     'learning_rate' : [0.01, 0.05, 0.1],
                     'iterations' : [30,50,100]
                 },
 
-                "AdaBoost Regressor" : {
+                "Adaboost Regressor" : {
                     'learning_rate' : [.1,.01,0.5,.001],
                    # 'loss' : [0.01, 0.05, 0.1],
                     'n_estimators' : [8,16,32,64,128,226]
 
                 }
             }
+
+            model_report : dict = evaluate_models(x_train, y_train, x_test, y_test, models, params)
+
+            # To get best model score from dist
+            best_model_score = max(sorted(model_report.values()))
+
+            #To get the model name
+            best_model_name = list(model_report.keys())[
+                list(model_report.values()).index(best_model_score)
+            ]
+            best_model = models[best_model_name]
+
+            if best_model_score < 0.6:
+                raise CustomException ("No best model found")
+            logging.info(f"Best found model on both training and testing dataset : {best_model} : {best_model_score}")
+
+            save_object(
+                file_path=self.model_trainer_config.trained_model_file_path,
+                obj=best_model
+            )
+
+            predicted = best_model.predict(x_test)
+
+            r2_squre = r2_score(y_test, predicted)
+
+            return r2_squre
 
         except Exception as e:
             raise CustomException(e,sys)
