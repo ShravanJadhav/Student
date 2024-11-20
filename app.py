@@ -24,8 +24,8 @@ if __name__=="__main__":
 
         #Model Traing
         model_trainer = ModelTrainer()
-        model_score = model_trainer.initiate_model_trainer(train_arr,test_arr)
-        print("Best Model Score: " + str(model_score))
+        model_trainer.initiate_model_trainer(train_arr,test_arr)
+        #print("Best Model Score: " + str(model_score))
 
 
     except Exception as e:
