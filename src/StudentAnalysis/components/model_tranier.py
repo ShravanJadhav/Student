@@ -119,12 +119,12 @@ class ModelTrainer:
             ]
             best_model = models[best_model_name]
 
-            print("This is the best model: ")
+            print("This is the best model:")
             print(best_model_name)
 
             model_names = list(params.keys())
 
-            actual_model = ""
+            actual_model=""
 
             for model in model_names:
                 if best_model_name == model:
@@ -133,7 +133,8 @@ class ModelTrainer:
             best_params = params[actual_model]
 
             
-            mlflow.set_registry_uri("")
+            mlflow.set_registry_uri("https://dagshub.com/ShravanJadhav/Student_Analysis.mlflow")
+
             tracking_url_type_store = urlparse(mlflow.get_tracking_uri()).scheme
 
             ## mlflow
@@ -144,7 +145,13 @@ class ModelTrainer:
 
                 (rmse, mae, r2) = self.eval_metrics(y_test, predicted_qualities)
 
-                mlflow.log_param(best_params)
+                #mlflow.log_param(best_params)
+
+                if isinstance(best_params, dict):
+                    for key, value in best_params.items():
+                        mlflow.log_param(key, value)
+                else:
+                    raise ValueError("Expected best_params to be a dictionary")
 
                 mlflow.log_metric("rmse",rmse)
                 mlflow.log_metric("r2", r2)
